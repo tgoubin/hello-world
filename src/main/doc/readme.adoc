@@ -171,7 +171,7 @@ Make some wonderful JUnit tests in `src/test/java`...
 
 * re-test a project build (`mvn clean package`) : in the `target` folder of the project, there is a `hello-world.jar` file.
 
-=== Prepare scripts for jar file launching
+=== Prepare scripts for JAR file launching
 
 A jar file is not launchable by clicking on it : a command line (`java -jar ...`) is necessary. Let's prepare the corresponding script files :
 
@@ -186,12 +186,12 @@ java -jar .\hello-world.jar
 
 ----
 #!bin/sh
-java -jar .\hello-world.jar
+java -jar ./hello-world.jar
 ----
 
-=== Build a final zip file
+=== Build a final deliverable file
 
-To build the final delivery artifact (a simple ZIP file) of our project, we have to use the *maven-assembly-plugin* again, with another configuration :
+The last step of the project is to build the *final artifact* (here, a simple ZIP file) of our project. For that, we have to use the *maven-assembly-plugin* again, with another configuration :
 
 * in the `pom.xml` file of the project, add an execution to the maven-assembly-plugin :
 
@@ -254,6 +254,8 @@ To build the final delivery artifact (a simple ZIP file) of our project, we have
 	</fileSets>
 </assembly>
 ----
+
+This descriptor file is read by the maven-assembly-plugin to build a *distribuable archive*. This one is the final product of the project.
 
 == An *hello-world* complete project example
 

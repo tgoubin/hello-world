@@ -1,3 +1,3 @@
 #!bin/sh
 
-java -jar .\bin\hello-world.jar
+java -jar ./bin/hello-world.jar
