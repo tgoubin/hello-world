@@ -3,8 +3,8 @@ package org.blagnac.mpa.helloworld.tests;
 import javax.swing.JFrame;
 
 import org.blagnac.mpa.helloworld.HelloWorldFrame;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * Class for HelloWorldFrame unit tests
@@ -22,12 +22,12 @@ public class HelloWorldFrameUnitTest {
 		HelloWorldFrame helloWorldFrame = new HelloWorldFrame();
 
 		// I check that the frame title is "Hello World"
-		Assertions.assertEquals(HelloWorldFrame.HELLO_WORLD, helloWorldFrame.getTitle());
+		Assert.assertEquals(HelloWorldFrame.HELLO_WORLD, helloWorldFrame.getTitle());
 
 		// I check that the frame default close operation is "Exit on close"
-		Assertions.assertTrue(helloWorldFrame.getDefaultCloseOperation() == JFrame.EXIT_ON_CLOSE);
+		Assert.assertTrue(helloWorldFrame.getDefaultCloseOperation() == JFrame.EXIT_ON_CLOSE);
 
 		// I check that the label displayed is "Hello World"
-		Assertions.assertEquals(HelloWorldFrame.HELLO_WORLD, helloWorldFrame.getHelloWorldLabel().getText());
+		Assert.assertEquals(HelloWorldFrame.HELLO_WORLD, helloWorldFrame.getHelloWorldLabel().getText());
 	}
 }

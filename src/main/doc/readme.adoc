@@ -5,16 +5,256 @@
 
 == Maven
 
-=== Setup
+=== Download and setup
+
+https://maven.apache.org/download.cgi
 
 === Configuration
 
+In the Maven setup folder :
+
+* create a folder `repo`
+* open the file `conf/settings.xml`
+* after `<settings...>`, add this line : `<localRepository>[Maven setup path]\repo</localRepository>`
+
+[NOTE]
+====
+Ensure that `[Maven setup path]\bin` is in the Windows PATH. This is useful to use the `mvn` command.
+====
+
 === Use with Eclipse
+
+* menu *Window* > *Preferences*
+* part *Maven* > *Installations*
+* *Add...* > *Directory...* > *[Maven setup path]* > *Finish*
+* Change the default Maven by choosing the installed one (not the embedded)
+* part *Maven* > *User Settings* > *Browse...* (for User Settings) > *[Maven setup path]\conf/settings.xml* > *Update Settings* > *Apply and close*
 
 == Project initialization
 
+=== Project creation
+
+* create a folder *hello-world*, which will contain all the project files
+* in this folder, create a `pom.xml` file - the Maven description file - with the following content :
+
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<!-- PROJECT DESCRIPTION -->
+	<groupId>org.blagnac.mpa</groupId>
+	<artifactId>hello-world</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+
+	<!-- PROPERTIES (VARIABLES) WHICH CAN BE USED IN THE FILE -->
+	<properties>
+		<java.version>1.8</java.version>
+		<maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<build>
+		<plugins>
+
+			<!-- MAVEN COMPILER PLUGIN CONFIGURATION -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven.compiler.plugin.version}</version>
+				<configuration>
+					<!-- SETS THE JAVA VERSION AND THE ENCODING TYPE -->
+					<encoding>${project.build.sourceEncoding}</encoding>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
+----
+
+* in your Eclipse workspace : 
+** right-click in the *Project Explorer* > *Import* > *Existing Maven Project*
+** choose the root directory of the *hello-world* project
+** check the `pom.xml` file > *Finish*
+
+=== First build
+
+==== First way : using a command line
+
+Launch the following command line from the root directory of *hello-world* project :
+
+----
+> mvn clean package
+----
+
+==== Second way : using Eclipse
+
+* right-click on *hello-world* project in Eclipse > *Run As* > *Run Configurations...*
+* *Maven Build* > right-click > *New Configuration*
+* *Name* : hello-world-mvn-package (for example)
+* *Base Directory* > *Workspace...* > *hello-world* project
+* *Goals* : `package` > *Run*
+
+[NOTE]
+====
+You can reuse this configuration, which is now available by clicking on the *Run* button, in the top of Eclipse.
+====
+
+==== Expected result
+
+----
+...
+[INFO] Building hello-world 1.0.0-SNAPSHOT
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] ------- maven-clean-plugin:2.5:clean (default-clean) @ hello-world------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+...
+----
+
 == Project development
+
+Make a beautiful Java application in `src/main/java`...
 
 == Project testing
 
+Make some wonderful JUnit tests in `src/test/java`...
+
 == Project building
+
+=== Build a jar file
+
+* in the `pom.xml` file of the project, in `<build><plugins>...</plugins></build>`, add the following lines :
+
+[source,xml]
+----
+<!-- ASSEMBLY PLUGIN CONFIGURATION -->
+<plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-assembly-plugin</artifactId>
+	<executions>
+		<!-- THIS EXECUTION IS TO BUILD .jar FILE -->
+		<!-- FROM hello-world JAVA PROJECT -->
+		<execution>
+			<id>build_hello_world_jar</id>
+			<!-- BUILT DURING THE "PACKAGE" MAVEN PHASE -->
+			<phase>package</phase>
+			<goals>
+				<goal>single</goal>
+			</goals>
+			<configuration>
+				<!-- THE JAR NAME IS DEFINED HERE -->
+				<finalName>hello-world</finalName>
+				<archive>
+					<manifest>
+						<!-- THE MAIN CLASS IS DEFINED HERE -->
+						<mainClass>org.blagnac.mpa.helloworld.HelloWorldApplication</mainClass>
+					</manifest>
+				</archive>
+				<descriptorRefs>
+					<!-- THE EXTERNAL LIBRAIRIES ARE EMBEDDED IN THE JAR FILE -->
+					<descriptorRef>jar-with-dependencies</descriptorRef>
+				</descriptorRefs>
+				<appendAssemblyId>false</appendAssemblyId>
+			</configuration>
+		</execution>
+	</executions>
+</plugin>
+----
+
+* re-test a project build (`mvn clean package`) : in the `target` folder of the project, there is a `hello-world.jar` file.
+
+=== Prepare scripts for jar file launching
+
+A jar file is not launchable by clicking on it : a command line (`java -jar ...`) is necessary. Let's prepare the corresponding script files :
+
+* in a new folder `src/main/scripts`
+* in this directory add the file `hello-world.cmd` (for Windows environment)
+
+----
+java -jar .\hello-world.jar
+----
+
+* ... and the file `hello-world.sh` (for Unix environment)
+
+----
+#!bin/sh
+java -jar .\hello-world.jar
+----
+
+=== Build a final zip file
+
+To build the final delivery artifact (a simple ZIP file) of our project, we have to use the *maven-assembly-plugin* again, with another configuration :
+
+* in the `pom.xml` file of the project, add an execution to the maven-assembly-plugin :
+
+[source,xml]
+----
+<!-- THIS EXECUTION IS TO BUILD .ZIP FILE -->
+<!-- WHOSE CONTENT IS DESCRIBED IN A DESCRIPTOR FILE -->
+<execution>
+	<id>build_hello_world_zip</id>
+	<!-- BUILT DURING THE "PACKAGE" MAVEN PHASE -->
+	<phase>package</phase>
+	<goals>
+		<goal>single</goal>
+	</goals>
+	<configuration>
+		<appendAssemblyId>false</appendAssemblyId>
+		<!-- THE ZIP NAME IS DEFINED HERE -->
+		<finalName>hello-world</finalName>
+		<descriptors>
+			<!-- THIS IS THE DESCRIPTOR FILE PATH -->
+			<descriptor>src/main/assembly/descriptor.xml</descriptor>
+		</descriptors>
+	</configuration>
+</execution>
+----
+
+* create a folder `src/main/assembly` and in this one, create a file `descriptor.xml`, containing the following lines :
+
+[source,xml]
+----
+<assembly
+	xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
+	<id>hello-world</id>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	
+	<!-- FILE TO PRODUCE FORMAT -->
+	<formats>
+		<format>zip</format>
+	</formats>
+	
+	<fileSets>
+		<!-- I WANT TO INCLUDE THE hello-world.jar FILE (PRODUCED BY THE maven-compiler-plugin) -->
+		<!-- IN A FOLDER hello-world -->
+		<fileSet>
+			<directory>${project.basedir}/target</directory>
+			<outputDirectory>./hello-world</outputDirectory>
+			<includes>
+				<include>hello-world.jar</include>
+			</includes>
+		</fileSet>
+		
+		<!-- I WANT TO INCLUDE THE SCRIPT FILES, WHICH ARE IN src/main/scripts FOLDER -->
+		<!-- AND WHICH CAN LAUNCH THE hello-world.jar FILE ON WINDOWS / UNIX ENVIRONMENT -->
+		<fileSet>
+			<directory>${project.basedir}/src/main/scripts</directory>
+			<outputDirectory>./hello-world</outputDirectory>
+		</fileSet>
+	</fileSets>
+</assembly>
+----
+
+== An *hello-world* complete project example
+
+https://github.com/tgoubin/hello-world.git
