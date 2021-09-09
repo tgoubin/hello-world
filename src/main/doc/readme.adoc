@@ -1,0 +1,20 @@
+:source-highlighter: coderay
+:toc:
+
+= *HELLO WORLD* - A first complete project with Maven
+
+== Maven
+
+=== Setup
+
+=== Configuration
+
+=== Use with Eclipse
+
+== Project initialization
+
+== Project development
+
+== Project testing
+
+== Project building

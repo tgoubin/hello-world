@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<!-- PROJECT DESCRIPTION -->
+	<groupId>org.blagnac.mpa</groupId>
+	<artifactId>hello-world</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+
+	<!-- PROPERTIES (VARIABLES) WHICH CAN BE USED IN THE FILE -->
+	<properties>
+		<java.version>1.8</java.version>
+		<junit.version>5.1.0</junit.version>
+
+		<maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
+		<asciidoctor.plugin.version>1.5.6</asciidoctor.plugin.version>
+		<asciidoctorj.diagram.plugin.version>1.5.8</asciidoctorj.diagram.plugin.version>
+
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<!-- EXTERNAL LIBRAIRIES USED IN THE PROJECT -->
+	<dependencies>
+		<!-- THIS IS THE UNIT TESTS LIBRAIRY -->
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<version>${junit.version}</version>
+			<!-- WE WANT TO USE THIS LIBRAIRY DURING TESTS ONLY -->
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+
+			<!-- MAVEN COMPILER PLUGIN CONFIGURATION -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven.compiler.plugin.version}</version>
+				<configuration>
+					<!-- SETS THE JAVA VERSION AND THE ENCODING TYPE -->
+					<encoding>${project.build.sourceEncoding}</encoding>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+				</configuration>
+			</plugin>
+
+			<!-- ASCIIDOCTOR PLUGIN CONFIGURATION -->
+			<!-- BUILD HTML DOCUMENTATION FROM ASCIIDOC FILES -->
+			<!-- WHICH ARE IN src/main/doc FOLDER -->
+			<plugin>
+				<groupId>org.asciidoctor</groupId>
+				<artifactId>asciidoctor-maven-plugin</artifactId>
+				<version>${asciidoctor.plugin.version}</version>
+				<executions>
+					<execution>
+						<id>generate_readme</id>
+						<!-- BUILT DURING THE "GENERATE-RESOURCES" MAVEN PHASE -->
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>process-asciidoc</goal>
+						</goals>
+						<configuration>
+							<!-- WE WANT TO PRODUCE HTML FILES -->
+							<backend>html5</backend>
+							<!-- ASCIIDOC FILES FOLDER PATH -->
+							<sourceDirectory>src/main/doc</sourceDirectory>
+							<sourceDocumentExtensions>
+								<!-- THIS IS THE EXTENSION FOR ASCIIDOC FILES -->
+								<sourceDocumentExtension>adoc</sourceDocumentExtension>
+							</sourceDocumentExtensions>
+							<!-- HTML FILES DESTINATION FOLDER -->
+							<outputDirectory>target</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- ASSEMBLY PLUGIN CONFIGURATION -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<!-- ITS FIRST EXECUTION IS TO BUILD .jar FILE -->
+					<!-- FROM hello-world JAVA PROJECT -->
+					<execution>
+						<id>build_hello_world_jar</id>
+						<!-- BUILT DURING THE "PACKAGE" MAVEN PHASE -->
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<!-- THE JAR NAME IS DEFINED HERE -->
+							<finalName>hello-world</finalName>
+							<archive>
+								<manifest>
+									<!-- THE MAIN CLASS IS DEFINED HERE -->
+									<mainClass>org.blagnac.mpa.helloworld.HelloWorldApplication</mainClass>
+								</manifest>
+							</archive>
+							<descriptorRefs>
+								<!-- THE EXTERNAL LIBRAIRIES ARE EMBEDDED IN THE JAR FILE -->
+								<descriptorRef>jar-with-dependencies</descriptorRef>
+							</descriptorRefs>
+							<appendAssemblyId>false</appendAssemblyId>
+						</configuration>
+					</execution>
+
+					<!-- ITS SECOND EXECUTION IS TO BUILD .ZIP FILE -->
+					<!-- WHOSE CONTENT IS DESCRIBED IN A DESCRIPTOR FILE -->
+					<execution>
+						<id>build_hello_world_zip</id>
+						<!-- BUILT DURING THE "PACKAGE" MAVEN PHASE -->
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<appendAssemblyId>false</appendAssemblyId>
+							<!-- THE ZIP NAME IS DEFINED HERE -->
+							<finalName>hello-world</finalName>
+							<descriptors>
+								<!-- THIS IS THE DESCRIPTOR FILE PATH -->
+								<descriptor>src/main/assembly/descriptor.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>
