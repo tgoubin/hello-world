@@ -30,6 +30,40 @@ Ensure that `[Maven setup path]\bin` is in the Windows PATH. This is useful to u
 * Change the default Maven by choosing the installed one (not the embedded)
 * part *Maven* > *User Settings* > *Browse...* (for User Settings) > *[Maven setup path]\conf/settings.xml* > *Update Settings* > *Apply and close*
 
+=== Some explanations about Maven behaviour
+
+Depending on the command launched, Maven will execute some *phases* of its build lifecycle. These phases can be (not complete list - by execution order) :
+
+* compile
+* test
+* package
+* install
+* deploy
+
+Each phase corresponds to the execution of :
+
+* the phases before
+* itself
+
+For example, the package phase launches :
+
+* a compilation
+* then, the tests
+* finally, the packaging
+
+Each phase uses some plugins :
+
+* default plugins, corresponding to each phase
+** the compile phase launches the *maven-compiler-plugin*
+** the test phase launches the *maven-surefire-plugin*
+** ...
+* other plugins, defined in the `pom.xml` file, in the `<plugins>...</plugins>` phase
+
+[NOTE]
+====
+If you are curious, you can look for all the details about Maven phases and other aspects of its behaviour, by using this https://www.google.com/search?q=maven+phases[Google search].
+====
+
 == Project initialization
 
 === Project creation
@@ -82,7 +116,7 @@ Ensure that `[Maven setup path]\bin` is in the Windows PATH. This is useful to u
 ** choose the root directory of the *hello-world* project
 ** check the `pom.xml` file > *Finish*
 
-=== First build
+=== First build (package)
 
 ==== First way : using a command line
 
@@ -129,7 +163,9 @@ Make some wonderful JUnit tests in `src/test/java`...
 
 == Project building
 
-=== Build a jar file
+=== Build a JAR file
+
+The *maven-assembly-plugin* is one of the solution to build a JAR file, from Java sources :
 
 * in the `pom.xml` file of the project, in `<build><plugins>...</plugins></build>`, add the following lines :
 
@@ -169,7 +205,7 @@ Make some wonderful JUnit tests in `src/test/java`...
 </plugin>
 ----
 
-* re-test a project build (`mvn clean package`) : in the `target` folder of the project, there is a `hello-world.jar` file.
+* re-test a project build (`mvn clean package`) : in the `target` folder of the project, there is a `hello-world.jar` file (you can see the execution of tests).
 
 === Prepare scripts for JAR file launching
 
@@ -255,7 +291,16 @@ The last step of the project is to build the *final artifact* (here, a simple ZI
 </assembly>
 ----
 
-This descriptor file is read by the maven-assembly-plugin to build a *distribuable archive*. This one is the final product of the project.
+This descriptor file is read by the maven-assembly-plugin to build a *distribuable archive*. This one is the final product of the project. You can generate it by launching the `mvn clean package` again.
+
+== Recap of the *hello-world* project phases
+
+* install the necessary tools (Eclipse, Maven, etc...)
+* initialize an empty Maven project
+* develop the application
+* write some automatic tests
+* prepare the application packaging
+* build the final delivery artifact
 
 == An *hello-world* complete project example
 
