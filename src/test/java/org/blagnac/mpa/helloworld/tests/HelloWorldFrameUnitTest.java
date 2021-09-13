@@ -30,4 +30,19 @@ public class HelloWorldFrameUnitTest {
 		// I check that the label displayed is "Hello World"
 		Assert.assertEquals(HelloWorldFrame.HELLO_WORLD, helloWorldFrame.getHelloWorldLabel().getText());
 	}
+	
+	/**
+	 * Unit test for 'HelloWorldFrame::display()'
+	 */
+	@Test
+	public void display_OK() {
+		// I create a HelloWorldFrame
+		HelloWorldFrame helloWorldFrame = new HelloWorldFrame();
+		
+		// I launch 'HelloWorldFrame::display()'
+		helloWorldFrame.display();
+		
+		// I check that the HelloWorldFrame is visible
+		Assert.assertTrue(helloWorldFrame.isVisible());
+	}
 }
